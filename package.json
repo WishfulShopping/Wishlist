@@ -1,0 +1,41 @@
+{
+  "name": "nextjs",
+  "version": "5.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "post-update": "echo \"codesandbox preview only, need an update\" && yarn upgrade --latest"
+  },
+  "dependencies": {
+    "@emotion/cache": "latest",
+    "@emotion/react": "latest",
+    "@emotion/server": "latest",
+    "@emotion/styled": "latest",
+    "@mui/icons-material": "latest",
+    "@mui/material": "latest",
+    "@samirrayani/metascraper-price": "^1.2.6",
+    "metascraper": "^5.30.3",
+    "metascraper-amazon": "^5.30.3",
+    "metascraper-date": "^5.30.3",
+    "metascraper-image": "^5.30.3",
+    "metascraper-logo": "^5.30.3",
+    "metascraper-logo-favicon": "^5.30.3",
+    "metascraper-title": "^5.30.3",
+    "multiparty": "^4.2.3",
+    "next": "latest",
+    "node-json-db": "^2.1.1",
+    "prop-types": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "react-table": "^7.8.0",
+    "regenerator-runtime": "^0.13.9",
+    "uid": "^2.0.0"
+  },
+  "devDependencies": {
+    "eslint": "latest",
+    "eslint-config-next": "latest"
+  }
+}
