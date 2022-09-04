@@ -5,6 +5,8 @@ import ReferrerKiller from './columns/referrer-killer';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import Close from '@mui/icons-material/Close';
+import Slider from '@mui/material/Slider';
+import Box from '@mui/material/Box';
 
 // This is a custom filter UI for selecting
 // a unique option from a list
@@ -77,13 +79,26 @@ function SliderColumnFilter({
 // Custom component to render Title 
 const Title = ({row:{original}}) => {
   return (
-    <>
+    <Box sx={{width:"15rem"}}>
       <a id={original.id} href={original.url} target="_blank" rel="noopener noreferrer" >
         {original.title}
       </a>
-    </>
+    </Box>
   );
 };
+
+
+// Custom component to render Title 
+const Price = ({row:{original}}) => {
+  return (
+    <Box sx={{width:"5rem", margin:"auto"}}>
+      <a id={original.id} href={original.url} target="_blank" rel="noopener noreferrer" >
+        {original.price>0 && `${original.price} €`}
+      </a>
+    </Box>
+  );
+};
+
 
 
 const Picture = ({ id, value }) => {
@@ -132,7 +147,7 @@ function DoubleSliderColumnFilter({
 
   const [min, max] = React.useMemo(() => {
     let min = preFilteredRows.length ? preFilteredRows[0].values[id] : 0
-    let max = preFilteredRows.length ? preFilteredRows[0].values[id] : 0
+    let max = preFilteredRows.length ? preFilteredRows[0].values[id] : 100
     preFilteredRows.forEach(row => {
       min = Math.min(row.values[id], min)
       max = Math.max(row.values[id], max)
@@ -140,35 +155,31 @@ function DoubleSliderColumnFilter({
     return [min, max]
   }, [id, preFilteredRows])
 
+
+  const handleChange = (event, newValue, activeThumb) => {
+    filterValue = {
+      min : newValue[0],
+      max : newValue[1]
+    }
+    setFilter(filterValue);
+  };
+
   return (
     <>
-      <section className="range-slider">
-      <span className="range-preview">{filterValue && filterValue.min ? filterValue.min : min}</span>
-      <span className="rangeValues"></span>
-      <input
-        type="range"
-        min={min}
-        max={max}
-        value={filterValue ? filterValue.min : min}
-        onChange={e => {
-          filterValue ??= {};
-          filterValue.min = parseInt(e.target.value, 10);
-          setFilter(filterValue);
-        }}
+      <Box sx={{ width: '30rem' }}>
+      <Slider
+        getAriaLabel={() => 'Price'}
+        value={[filterValue?.min||min, filterValue?.max||max]}
+        onChange={handleChange}
+        valueLabelDisplay="auto"
+        getAriaValueText={(v)=>v}
+        disableSwap
+        defaultValue={[min, max]}
+        step={10}
+        min={min-10}
+        max={max+10}
       />
-      <input
-        type="range"
-        min={min}
-        max={max}
-        value={filterValue ? filterValue.max : max}
-        onChange={e => {
-          filterValue ??= {};
-          filterValue.max = parseInt(e.target.value, 10);
-          setFilter(filterValue);
-        }}
-      />
-      </section>
-      <span className="range-preview-right">{filterValue&&filterValue.max ? filterValue.max : max}</span>
+    </Box>
       <Button className="reset-button-left btn btn-secondary" onClick={() => setFilter(undefined)}>Reset</Button>
     </>
   )
@@ -290,6 +301,7 @@ export const Columns = () => [
         accessor: 'price',
         Filter: DoubleSliderColumnFilter,
         filter: filterBetween,
+        Cell: Price,
       },
       {
         Header: 'Picture',

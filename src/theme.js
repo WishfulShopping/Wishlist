@@ -5,10 +5,34 @@ import { red } from '@mui/material/colors';
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#556cd6',
+      main: '#500809',
     },
     secondary: {
-      main: '#19857b',
+      main: '#ab0000',
+    },
+    tertiary: {
+      main: '#cbc683',
+    },
+    quaternary: {
+      main: '#f1e2cb',
+    },
+    quinary : {
+      main: '#87621e',
+    },
+    senary : {
+      main: '#000000',
+    },
+    septenary : {
+      main: '#000000',
+    },
+    octonary : {
+      main: '#000000',
+    },
+    nonary : {
+      main: '#000000',
+    },
+    denary  : {
+      main: '#000000',
     },
     error: {
       main: red.A400,

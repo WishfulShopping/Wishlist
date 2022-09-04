@@ -160,7 +160,7 @@ export default function Table({ columns, data }) {
             return (
               <tr {...row.getRowProps()}>
                 {row.cells.map(cell => {
-                  return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                  return <td className={cell.column.id} {...cell.getCellProps()}>{cell.render('Cell')}</td>
                 })}
               </tr>
             )

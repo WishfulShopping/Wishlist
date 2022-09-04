@@ -20,8 +20,9 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
+import EvenIcon from '@mui/icons-material/NewspaperOutlined';
+import OddIcon from '@mui/icons-material/NewspaperSharp';
+import Add from '@mui/icons-material/AddCircle';
 import { uid } from 'uid/secure';
 import Title  from '../components/title';
 import { useRouter } from 'next/router'
@@ -175,7 +176,7 @@ export default function Layout({children}) {
                     justifyContent: 'center',
                   }}
                 >
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                  {index % 2 === 0 ? <EvenIcon /> : <OddIcon />}
                 </ListItemIcon>
                 <ListItemText primary={item || url.replace('/list/', '')} sx={{ opacity: open ? 1 : 0 }} />
               </ListItemButton>
@@ -201,9 +202,9 @@ export default function Layout({children}) {
                     justifyContent: 'center',
                   }}
                 >
-                  <MailIcon />
+                  <Add />
                 </ListItemIcon>
-                <ListItemText primary={"+ Create a new wishlist"} sx={{ opacity: open ? 1 : 0 }} />
+                <ListItemText primary={"Create a new wishlist"} sx={{ opacity: open ? 1 : 0 }} />
               </ListItemButton>
             </ListItem>
         </List>
