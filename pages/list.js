@@ -4,6 +4,7 @@ import Container from '@mui/material/Container';
 import Row from '@mui/material/TableRow';
 import Table  from '../components/table'
 import { Columns } from '../components/columns'
+import Help  from '../components/help'
 import React from 'react'
 import 'regenerator-runtime/runtime';
 import { useRouter } from 'next/router'
@@ -26,6 +27,8 @@ export default function List() {
             <Table columns={column} data={data} />
           </div>
       </Container>)}
+
+      {data.length<=0 && (<Help/>)}
       </>
   )
 }
