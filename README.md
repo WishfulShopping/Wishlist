@@ -2,7 +2,7 @@
 
 ## Quickstart
 
-sudo docker run --name=wishlist --volume=/home/pascal/wishlist:/app/data  -p 4576:3000 --restart=unless-stopped netpascal/wishlist:0.0.1
+sudo docker run --name=wishlist --volume=/home/pascal/wishlist:/app/data  -p 4576:3000 --restart=unless-stopped netpascal0123/wishlist:0.0.2
 
 http://127.0.0.1:4576
 
