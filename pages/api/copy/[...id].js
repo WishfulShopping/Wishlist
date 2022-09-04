@@ -7,6 +7,6 @@ export default async (req, res) => {
   const source = connect(id); 
   const target = connect(to); 
   const doc = await source.getObject(`/${item}`);
-  target.push(`/${item}`, doc, true);
+  await target.push(`/${item}`, doc, true);
   res.status(200).send("");
 }
