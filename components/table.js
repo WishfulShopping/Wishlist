@@ -4,6 +4,7 @@ import { useTable, useFilters, useGlobalFilter, useAsyncDebounce } from 'react-t
 import Button from '@mui/material/Button';
 
 import { Columns } from './columns'
+import Row from './table/row'
 import filterGreaterThan from './filter/filterGreaterThan'
 
 // Define a default UI for filtering
@@ -157,13 +158,7 @@ export default function Table({ columns, data }) {
         <tbody {...getTableBodyProps()}>
           {firstPageRows.map((row, i) => {
             prepareRow(row)
-            return (
-              <tr {...row.getRowProps()}>
-                {row.cells.map(cell => {
-                  return <td className={cell.column.id} {...cell.getCellProps()}>{cell.render('Cell')}</td>
-                })}
-              </tr>
-            )
+            return <Row key={i} row={row}/>
           })}
         </tbody>
       </table>

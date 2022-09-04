@@ -7,6 +7,9 @@ import { CacheProvider } from '@emotion/react';
 import theme from '../src/theme';
 import createEmotionCache from '../src/createEmotionCache';
 import Layout from './_layout.js'
+import { DndProvider } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
+
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -22,9 +25,11 @@ export default function MyApp(props) {
       <ThemeProvider theme={theme}>
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
         <CssBaseline />
-        <Layout>
-          <Component {...pageProps} />
-        </Layout>
+        <DndProvider backend={HTML5Backend}>
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+        </DndProvider>
       </ThemeProvider>
     </CacheProvider>
   );

@@ -38,6 +38,10 @@ module.exports = {
         {
           source: `/api/delete/:id`,
           destination: `/api/delete?id=:id`
+        },
+        {
+          source: `/api/copy/:id`,
+          destination: `/api/copy?id=:id`
         }
       ];
     },

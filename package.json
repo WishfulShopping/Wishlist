@@ -29,6 +29,8 @@
     "node-json-db": "^2.1.1",
     "prop-types": "latest",
     "react": "latest",
+    "react-dnd": "^16.0.1",
+    "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "latest",
     "react-table": "^7.8.0",
     "regenerator-runtime": "^0.13.9",

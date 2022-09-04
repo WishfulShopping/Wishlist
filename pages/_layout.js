@@ -2,6 +2,7 @@ import * as React from 'react';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import Link from '../src/Link';
+import Item from '../components/list/item';
 import Copyright from '../src/Copyright';
 import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles';
 import MuiDrawer from '@mui/material/Drawer';
@@ -20,8 +21,6 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import EvenIcon from '@mui/icons-material/NewspaperOutlined';
-import OddIcon from '@mui/icons-material/NewspaperSharp';
 import Add from '@mui/icons-material/AddCircle';
 import { uid } from 'uid/secure';
 import Title  from '../components/title';
@@ -163,30 +162,7 @@ export default function Layout({children}) {
         </DrawerHeader>
         <Divider />
         <List>
-          {history.getStorage().map(([url, item], index) => (
-            <ListItem key={index} disablePadding sx={{ display: 'block' }}>
-              <ListItemButton
-                sx={{
-                  minHeight: 48,
-                  justifyContent: open ? 'initial' : 'center',
-                  px: 2.5,
-                }}
-                component={Link} 
-                to={url}
-              >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : 'auto',
-                    justifyContent: 'center',
-                  }}
-                >
-                  {index % 2 === 0 ? <EvenIcon /> : <OddIcon />}
-                </ListItemIcon>
-                <ListItemText primary={item || url.replace('/list/', '')} sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
-            </ListItem>
-          ))}
+          {history.getStorage().map(([url, item], index) => <Item key={index} url={url} item={item} index={index}/>)}
         </List>
         <Divider />
         <List>
