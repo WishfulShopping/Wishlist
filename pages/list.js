@@ -22,11 +22,9 @@ export default function List() {
     <>     
       
       {data.length>0 && (<Container>
-        <Row>
           <div className="ReactTable">
             <Table columns={column} data={data} />
           </div>
-        </Row>
       </Container>)}
       </>
   )

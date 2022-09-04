@@ -26,6 +26,7 @@ import Add from '@mui/icons-material/AddCircle';
 import { uid } from 'uid/secure';
 import Title  from '../components/title';
 import { useRouter } from 'next/router'
+import { useHistory } from '../lib/history';
 
 const drawerWidth = 240;
 
@@ -98,17 +99,22 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 export default function Layout({children}) {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
-  const [history, setHistory] = React.useState([]);
+
+  const history = useHistory();
   const [list, setList] = React.useState(false);
   const router = useRouter();
 
   React.useEffect(()=>{
     // automatically expand on desktop
-    setOpen(history.length && window.innerWidth >= 1024);
+    setOpen(history.getStorage().length && window.innerWidth >= 1024);
   }, [history]);
 
+
   React.useEffect(()=>{
-    setList(window.location.pathname.match('list'))
+    setList(window.location.pathname.match('list'));
+    if (list) {
+      history.addTraceInHistory("");
+    }
   }, [router]);
 
   const handleDrawerOpen = () => {
@@ -123,14 +129,13 @@ export default function Layout({children}) {
   React.useEffect(() => {
     setId(uid(32));
     window['metascraperDisable'] = true;
-    setHistory(Object.entries(JSON.parse(localStorage.getItem('history')) || {}))
   }, [router]);
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
       <AppBar position="fixed" open={open}>
         <Toolbar>
-          {history.length>0 && (
+          {history.getStorage().length>0 && (
           <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -146,10 +151,10 @@ export default function Layout({children}) {
           )}
           {!list ? <Typography variant="h6" noWrap component="div">
   Wishlist
-  </Typography> : <Title/>}
+  </Typography> : <Title history={history} />}
         </Toolbar>
       </AppBar>
-      {history.length>0 && (
+      {history.getStorage().length>0 && (
       <Drawer variant="permanent" open={open}>
         <DrawerHeader>
           <IconButton onClick={handleDrawerClose}>
@@ -158,7 +163,7 @@ export default function Layout({children}) {
         </DrawerHeader>
         <Divider />
         <List>
-          {history.map(([url, item], index) => (
+          {history.getStorage().map(([url, item], index) => (
             <ListItem key={index} disablePadding sx={{ display: 'block' }}>
               <ListItemButton
                 sx={{
