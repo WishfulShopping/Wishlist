@@ -133,7 +133,7 @@ var ReferrerKiller = (function () {
 					var elems  = document.getElementsByTagName(\\\'*\\\'),\
 						width  = 0,\
 						height = 0,\
-						first  = document.body.firstChild,\
+						first  = document.body.firstChild.nextSibling,\
 						elem;\
 					if (first.offsetHeight && first.offsetWidth) {\
 						width = first.offsetWidth;\
@@ -214,7 +214,7 @@ var ReferrerKiller = (function () {
 	 * @param {Object} [imgAttributesParam]
 	 * @return {String} html
 	 */
-	var imageHtml = PUB.imageHtml = function (url, imgAttributesParam) {
+	var imageHtml = PUB.imageHtml = function (url, imgAttributesParam, favicon) {
 		var imgAttributes = imgAttributesParam || {},
 		/*-- Making sure this styles are applyed in the image but let the possibility to overwrite them --*/
 			defaultStyles = 'border:none; margin: 0; padding: 0';
@@ -223,7 +223,11 @@ var ReferrerKiller = (function () {
 		} else {
 			imgAttributes.style = defaultStyles;
 		}
-		return htmlString('<img src="' + escapeDoubleQuotes(url) + '" ' + objectToHtmlAttributes(imgAttributes) + '/>');
+		var faviconHtml = '<span></span>';
+		if (favicon && favicon.length>0) {
+			faviconHtml = '<img style="position:absolute;width:2rem;padding:1em;" src="' + escapeDoubleQuotes(favicon) + '" />';
+		}
+		return htmlString(faviconHtml + '<img src="' + escapeDoubleQuotes(url) + '" ' + objectToHtmlAttributes(imgAttributes) + '/>');
 	};
 	
 	/**

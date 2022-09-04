@@ -1,12 +1,18 @@
 import React from 'react'
 import filterGreaterThan from './filter/filterGreaterThan'
 import filterBetween from './filter/filterBetween'
+import filterDomain from './filter/filterDomain'
 import ReferrerKiller from './columns/referrer-killer';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import Close from '@mui/icons-material/Close';
 import Slider from '@mui/material/Slider';
 import Box from '@mui/material/Box';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 
 // This is a custom filter UI for selecting
 // a unique option from a list
@@ -38,6 +44,64 @@ function SelectColumnFilter({
         </option>
       ))}
     </select>
+  )
+}
+
+
+// This is a custom filter UI for selecting
+// a unique option from a list
+function FaviconColumnFilter({
+  column: { filterValue, setFilter, preFilteredRows, id },
+}) {
+  // Calculate the options for filtering
+  // using the preFilteredRows
+  const options = React.useMemo(() => {
+    const options = new Set();
+    preFilteredRows.forEach(row => {
+      [row.original["url"], row.original["logo"]].forEach((option) => { 
+      if (option && option.length) {
+        const { hostname } = new URL(option);
+        options.add(hostname.split(".").splice(-2).join("."))
+      }});
+    })
+    return [...Array.from(options.values())]
+  }, [id, preFilteredRows])
+
+  const handleChange = (event) => {
+    const {
+      target: { value },
+    } = event;
+    setFilter(
+      // On autofill we get a stringified value.
+      typeof value === 'string' ? value.split(',') : value,
+    );
+  };
+
+  // Render a multi-select box
+  return (
+      <div>
+        <FormControl sx={{ m: 1, width:"7em"}}>
+          <InputLabel id="demo-multiple-name-label">Website</InputLabel>
+          <Select
+            labelId="demo-multiple-name-label"
+            id="demo-multiple-name"
+            multiple
+            value={filterValue||[]}
+            onChange={handleChange}
+            input={<OutlinedInput label="Name" />}
+          >
+            {options.map((name) => (
+              <MenuItem
+                key={name}
+                value={name}
+              >
+                {name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <Button className="reset-button btn btn-secondary" onClick={() => setFilter(undefined)}>Reset</Button>
+      </div>
   )
 }
 
@@ -101,24 +165,25 @@ const Price = ({row:{original}}) => {
 
 
 
-const Picture = ({ id, value }) => {
+const Picture = ({ id, value, favicon }) => {
   const getUrl = (value) => {
     const width = 250;
     if (value.match(/^http/))
-      return ReferrerKiller.imageHtml(value, {width:`${width}px`});
+      return ReferrerKiller.imageHtml(value, {width:`${width}px`}, favicon);
 
     if (value.match(/^data:image\/svg\+xml;/))
       return `<embed src="${value}" width="${width}px"  />`;
 
     return `<img src="${value}" width="${width}px" />`;
   }
-  const [url, setUrl] = React.useState(getUrl(value));
+  const [url, setUrl] = React.useState("");
+  React.useEffect(()=>setUrl(getUrl(value)), [value]);
 
   return (
     <>
       <div className="alternative-image-container">
         <Button className="hover-alternative-image" onClick={()=>fetch(`${window.location.toString().replace('/list', '/api/alternative')}/${id}`).then((response)=>response.text()).then(res => setUrl(getUrl(res)))}>Load alternative image</Button>
-        <div dangerouslySetInnerHTML={{ __html: url }}></div>
+        {url.length && (<div dangerouslySetInnerHTML={{ __html: url }}></div>)}
       </div>
     </>
   );
@@ -306,8 +371,9 @@ export const Columns = () => [
       {
         Header: 'Picture',
         accessor: 'image',
-        Cell: ({ row:{original}, cell: { value } }) => <Picture id={original.id} value={value.split(',')[0]} />,
-        Filter:()=><></>,
+        Cell: ({ row:{original}, cell: { value } }) => <Picture id={original.id} favicon={original.logo} value={value.split(',')[0]} />,
+        Filter: FaviconColumnFilter,
+        filter: filterDomain,
       },
       {
         Header: 'Delete',
