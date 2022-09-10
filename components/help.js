@@ -8,9 +8,11 @@ import Image from 'next/image'
 
 export default function Help() {
   return (<>
-  <Typography sx={{position:"relative"}}>
+  <Container >
+  <Typography sx={{position:"relative", margin:"auto"}}>
         {'No entries'}
         </Typography>
+        </Container>
         <Container>
           <Box sx={{float:"left", margin:"1rem"}}> 
     <Typography sx={{position:"relative"}}>

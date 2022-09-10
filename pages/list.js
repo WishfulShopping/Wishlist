@@ -22,7 +22,7 @@ export default function List() {
   return (
     <>     
       
-      {data.length>0 && (<Container>
+      {data.length>0 && (<Container sx={{ padding:"0!important" }}>
           <div className="ReactTable">
             <Table columns={column} data={data} />
           </div>

@@ -2,10 +2,16 @@ import React, { useState } from 'react'
 import { useTable, useFilters, useGlobalFilter, useAsyncDebounce } from 'react-table'
 // A great library for fuzzy filtering/sorting items
 import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
 
+import { useRouter } from 'next/router'
 import { Columns } from './columns'
 import Row from './table/row'
 import filterGreaterThan from './filter/filterGreaterThan'
+import { Container } from '@mui/material';
 
 // Define a default UI for filtering
 function GlobalFilter({
@@ -118,8 +124,14 @@ export default function Table({ columns, data }) {
     useGlobalFilter // useGlobalFilter!
   )
 
-  const productPerPage = 10;
+  const productPerPage = 4*12;
   const [page, setPage] = useState(1);
+
+  const router = useRouter();
+
+  React.useEffect(() => {
+    setPage(1)
+  }, [router]);
 
   // We don't want to render all of the rows for this example, so cap
   // it for this use case
@@ -127,47 +139,33 @@ export default function Table({ columns, data }) {
 
   return (
     <>
-      <table {...getTableProps()}>
-        <thead>
+      <Container {...getTableProps()}  sx={{ padding:"0!important"}}>
           {headerGroups.map(headerGroup => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
+            <Container {...headerGroup.getHeaderGroupProps()} >
               {headerGroup.headers.map(column => (
-                <th {...column.getHeaderProps()}>
+                <Box {...column.getHeaderProps()} sx={{float:"left", paddingRight:'1em'}}>
                   {/*column.render('Header')*/}
                   {/* Render the columns filter UI */}
                   <div>{column.canFilter ? column.render('Filter') : null}</div>
-                </th>
+                </Box>
               ))}
-            </tr>
+            </Container>
           ))}
-          <tr>
-            <th
-              colSpan={visibleColumns.length}
-              style={{
-                textAlign: 'left'
-              }}
-            >
-              <GlobalFilter
-                preGlobalFilteredRows={preGlobalFilteredRows}
-                globalFilter={state.globalFilter}
-                setGlobalFilter={setGlobalFilter}
-              />
-            </th>
-          </tr>
-        </thead>
-        <tbody {...getTableBodyProps()}>
+          <Box sx={{clear:'both'}}/>
+        <Container {...getTableBodyProps()} sx={{ padding:"0!important"}}>
           {firstPageRows.map((row, i) => {
             prepareRow(row)
             return <Row key={i} row={row}/>
           })}
-        </tbody>
-      </table>
-      <br />
-      <div>
+        </Container>
+      </Container>
+      <Box sx={{clear:'both'}}/>
+      <Box sx={{margin:'2em'}}>
+        <Button disabled={page == 1} onClick={()=>{setPage(1); window.scrollTo(0, 0);}}>First</Button>
         <Button disabled={page-1==0} onClick={()=>{setPage(page-1); window.scrollTo(0, 0);}}>Previous</Button>
         Page {page} / {Math.round(rows.length/productPerPage) +1}
         <Button disabled={page*productPerPage>=rows.length} onClick={()=>{setPage(page+1); window.scrollTo(0, 0);}}>Next</Button>
-      </div>
+      </Box>
     </>
   )
 }

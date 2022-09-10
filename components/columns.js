@@ -6,6 +6,7 @@ import ReferrerKiller from './columns/referrer-killer';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import Close from '@mui/icons-material/Close';
+import Reload from '@mui/icons-material/Refresh';
 import Slider from '@mui/material/Slider';
 import Box from '@mui/material/Box';
 import OutlinedInput from '@mui/material/OutlinedInput';
@@ -13,6 +14,8 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
+import { Link, Typography } from '@mui/material';
+import theme from '../src/theme';
 
 // This is a custom filter UI for selecting
 // a unique option from a list
@@ -143,10 +146,12 @@ function SliderColumnFilter({
 // Custom component to render Title 
 const Title = ({row:{original}}) => {
   return (
-    <Box sx={{width:"15rem"}}>
-      <a id={original.id} href={original.url} target="_blank" rel="noopener noreferrer" >
-        {original.title}
-      </a>
+    <Box sx={{width:"15rem", height:"2rem;", marginTop:"1em"}}>
+      {original.title.split("|").map(title => (<Typography noWrap>
+        <Link sx={{textDecoration:"None"}} id={original.id} href={original.url} target="_blank" rel="noopener noreferrer">
+        {title}
+       </Link>
+      </Typography>))}
     </Box>
   );
 };
@@ -155,10 +160,10 @@ const Title = ({row:{original}}) => {
 // Custom component to render Title 
 const Price = ({row:{original}}) => {
   return (
-    <Box sx={{width:"5rem", margin:"auto"}}>
-      <a id={original.id} href={original.url} target="_blank" rel="noopener noreferrer" >
+    <Box sx={{position:"relative", float:"right", padding: "1em", marginTop:"-3em;",marginRight:"2em;", backgroundColor:"rgba(255,255,255,0.8);", borderRadius: "50px;", textAlign:"center"}}>
+      <Link id={original.id} href={original.url} target="_blank" rel="noopener noreferrer" sx={{textDecoration:"none", fontSize:"1.5em;", color:theme.palette.quinary.main}}>
         {original.price>0 && `${original.price} €`}
-      </a>
+      </Link>
     </Box>
   );
 };
@@ -181,10 +186,10 @@ const Picture = ({ id, value, favicon }) => {
 
   return (
     <>
-      <div className="alternative-image-container">
-        <Button className="hover-alternative-image" onClick={()=>fetch(`${window.location.toString().replace('/list', '/api/alternative')}/${id}`).then((response)=>response.text()).then(res => setUrl(getUrl(res)))}>Load alternative image</Button>
+      <Box sx={{height:"15rem", overflow:"hidden"}}>
+        <Button color="quinary" sx={{position:"absolute", marginLeft:"1em;", float:"left"}} title="Load alternative image" className="hover-alternative-image" onClick={()=>fetch(`${window.location.toString().replace('/list', '/api/alternative')}/${id}`).then((response)=>response.text()).then(res => setUrl(getUrl(res)))}><Reload/></Button>
         {url.length && (<div dangerouslySetInnerHTML={{ __html: url }}></div>)}
-      </div>
+      </Box>
     </>
   );
 };
@@ -192,11 +197,11 @@ const Picture = ({ id, value, favicon }) => {
 const DeleteRow = ({row:{original}}) => {
   return (
     <>
-      <div className="col-1 mx-auto" >
-        <IconButton onClick={()=>fetch(`${window.location.toString().replace('/list', '/api/delete')}/${original.id}`).then(()=>window.location=window.location)}>
+      <Box sx={{position:"relative", float:"right"}} >
+        <IconButton title="Delete" onClick={()=>fetch(`${window.location.toString().replace('/list', '/api/delete')}/${original.id}`).then(()=>window.location=window.location)}>
           <Close />
         </IconButton>
-      </div>
+      </Box>
     </>
   );
 };
@@ -357,16 +362,9 @@ export const Columns = () => [
     Header: 'Favorites',
     columns: [
       {
-        Header: 'Title',
-        accessor: 'title',
-        Cell: Title,
-      },
-      {
-        Header: 'Price',
-        accessor: 'price',
-        Filter: DoubleSliderColumnFilter,
-        filter: filterBetween,
-        Cell: Price,
+        Header: 'Delete',
+        Cell: DeleteRow,
+        Filter:null,
       },
       {
         Header: 'Picture',
@@ -376,9 +374,16 @@ export const Columns = () => [
         filter: filterDomain,
       },
       {
-        Header: 'Delete',
-        Cell: DeleteRow,
-        Filter:null,
+        Header: 'Price',
+        accessor: 'price',
+        Filter: DoubleSliderColumnFilter,
+        filter: filterBetween,
+        Cell: Price,
+      },
+      {
+        Header: 'Title',
+        accessor: 'title',
+        Cell: Title,
       }
     ],
   },

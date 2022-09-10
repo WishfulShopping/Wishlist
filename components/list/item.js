@@ -16,7 +16,7 @@ export default function Item({url, item, index}) {
   const [{ isOver }, drop] = useDrop(
     () => ({
       accept: 'row',
-      drop: (state) => fetch(`${window.location.toString().replace('/list', '/api/copy')}/${state.id}?to=${url.replace('/list/', '')}`).then(()=>window.location=url),
+      drop: ([id, baseUrl]) => fetch(`${baseUrl.replace('/list', '/api/copy')}/${id}?to=${url.replace('/list/', '')}`).then(()=>window.location=url),
       collect: (monitor) => ({
         isOver: !!monitor.isOver()
       })
