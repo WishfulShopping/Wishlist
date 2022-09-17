@@ -1,13 +1,13 @@
 
 import Container from '@mui/material/Container';
 
-import Row from '@mui/material/TableRow';
 import Table  from '../components/table'
 import { Columns } from '../components/columns'
 import Help  from '../components/help'
 import React from 'react'
 import 'regenerator-runtime/runtime';
 import { useRouter } from 'next/router'
+import { getWishlistDataUrl } from '../lib/url';
 
 export default function List() {
   const [data, setData] = React.useState([]);
@@ -15,7 +15,7 @@ export default function List() {
   const router = useRouter();
   React.useEffect(() => {
     /* get wishlist data*/
-    fetch(window.location.toString().replace('/list', '/api/hello')).then(response => response.json()).then(setData);
+    fetch(getWishlistDataUrl()).then(response => response.json()).then(setData);
 
   }, [router]);
   

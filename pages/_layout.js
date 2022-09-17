@@ -13,6 +13,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
+import EvenIcon from '@mui/icons-material/NewspaperOutlined';
 
 import Typography from '@mui/material/Typography';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -26,6 +27,8 @@ import { uid } from 'uid/secure';
 import Title  from '../components/title';
 import { useRouter } from 'next/router'
 import { useHistory } from '../lib/history';
+import Category from '../components/list/category';
+import { isListPage } from '../lib/url';
 
 const drawerWidth = 240;
 
@@ -110,7 +113,7 @@ export default function Layout({children}) {
 
 
   React.useEffect(()=>{
-    setList(window.location.pathname.match('list'));
+    setList(isListPage());
     if (list) {
       history.addTraceInHistory("");
     }
@@ -162,7 +165,7 @@ export default function Layout({children}) {
         </DrawerHeader>
         <Divider />
         <List>
-          {history.getStorage().map(([url, item], index) => <Item key={index} url={url} item={item} index={index}/>)}
+          {history.getStorage().map(([url, item], index) => <React.Fragment key={index} ><Item url={url} item={item} type={<EvenIcon/>}/>{open && <Category url={url} />}</React.Fragment>)}
         </List>
         <Divider />
         <List>

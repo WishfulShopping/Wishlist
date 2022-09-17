@@ -1,147 +1,19 @@
 import React from 'react'
-import filterGreaterThan from './filter/filterGreaterThan'
-import filterBetween from './filter/filterBetween'
-import filterDomain from './filter/filterDomain'
+import {filterBetween, DoubleSliderColumnFilter} from './filter/filterBetween'
+import {filterDomain, FaviconColumnFilter} from './filter/filterDomain'
+import {filterCategory, CategoryInput, CategoryCell} from './filter/filterCategory'
 import ReferrerKiller from './columns/referrer-killer';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import Close from '@mui/icons-material/Close';
 import Reload from '@mui/icons-material/Refresh';
-import Slider from '@mui/material/Slider';
 import Box from '@mui/material/Box';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { Link, Typography } from '@mui/material';
 import theme from '../src/theme';
-
-// This is a custom filter UI for selecting
-// a unique option from a list
-function SelectColumnFilter({
-  column: { filterValue, setFilter, preFilteredRows, id },
-}) {
-  // Calculate the options for filtering
-  // using the preFilteredRows
-  const options = React.useMemo(() => {
-    const options = new Set()
-    preFilteredRows.forEach(row => {
-      options.add(row.values[id])
-    })
-    return [...Array.from(options.values())]
-  }, [id, preFilteredRows])
-
-  // Render a multi-select box
-  return (
-    <select
-      value={filterValue}
-      onChange={e => {
-        setFilter(e.target.value || undefined)
-      }}
-    >
-      <option value="">All</option>
-      {options.map((option, i) => (
-        <option key={i} value={option}>
-          {option}
-        </option>
-      ))}
-    </select>
-  )
-}
+import { getDeleteItemUrl, getLoadAlternativeImageUrl, isReadWriteUrl, reloadPage } from '../lib/url';
 
 
-// This is a custom filter UI for selecting
-// a unique option from a list
-function FaviconColumnFilter({
-  column: { filterValue, setFilter, preFilteredRows, id },
-}) {
-  // Calculate the options for filtering
-  // using the preFilteredRows
-  const options = React.useMemo(() => {
-    const options = new Set();
-    preFilteredRows.forEach(row => {
-      [row.original["url"], row.original["logo"]].forEach((option) => { 
-      if (option && option.length) {
-        const { hostname } = new URL(option);
-        options.add(hostname.split(".").splice(-2).join("."))
-      }});
-    })
-    return [...Array.from(options.values())]
-  }, [id, preFilteredRows])
 
-  const handleChange = (event) => {
-    const {
-      target: { value },
-    } = event;
-    setFilter(
-      // On autofill we get a stringified value.
-      typeof value === 'string' ? value.split(',') : value,
-    );
-  };
-
-  // Render a multi-select box
-  return (
-      <div>
-        <FormControl sx={{ m: 1, width:"7em"}}>
-          <InputLabel id="demo-multiple-name-label">Website</InputLabel>
-          <Select
-            labelId="demo-multiple-name-label"
-            id="demo-multiple-name"
-            multiple
-            value={filterValue||[]}
-            onChange={handleChange}
-            input={<OutlinedInput label="Name" />}
-          >
-            {options.map((name) => (
-              <MenuItem
-                key={name}
-                value={name}
-              >
-                {name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <Button className="reset-button btn btn-secondary" onClick={() => setFilter(undefined)}>Reset</Button>
-      </div>
-  )
-}
-
-// This is a custom filter UI that uses a
-// slider to set the filter value between a column's
-// min and max values
-function SliderColumnFilter({
-  column: { filterValue, setFilter, preFilteredRows, id },
-}) {
-  // Calculate the min and max
-  // using the preFilteredRows
-
-  const [min, max] = React.useMemo(() => {
-    let min = preFilteredRows.length ? preFilteredRows[0].values[id] : 0
-    let max = preFilteredRows.length ? preFilteredRows[0].values[id] : 0
-    preFilteredRows.forEach(row => {
-      min = Math.min(row.values[id], min)
-      max = Math.max(row.values[id], max)
-    })
-    return [min, max]
-  }, [id, preFilteredRows])
-
-  return (
-    <>
-      <input
-        type="range"
-        min={min}
-        max={max}
-        value={filterValue || min}
-        onChange={e => {
-          setFilter(parseInt(e.target.value, 10))
-        }}
-      />
-      <Button className="reset-button btn btn-secondary" onClick={() => setFilter(undefined)}>Reset</Button>
-    </>
-  )
-}
 
 // Custom component to render Title 
 const Title = ({row:{original}}) => {
@@ -170,7 +42,11 @@ const Price = ({row:{original}}) => {
 
 
 
-const Picture = ({ id, value, favicon }) => {
+const Picture = ({ row:{original}, cell: { value } }) => {
+
+  const id = original.id;
+  const favicon = original.logo;
+
   const getUrl = (value) => {
     const width = 250;
     if (value.match(/^http/))
@@ -182,12 +58,12 @@ const Picture = ({ id, value, favicon }) => {
     return `<img src="${value}" width="${width}px" />`;
   }
   const [url, setUrl] = React.useState("");
-  React.useEffect(()=>setUrl(getUrl(value)), [value]);
+  React.useEffect(()=>setUrl(getUrl(value.split(',')[0])), [value]);
 
   return (
     <>
       <Box sx={{height:"15rem", overflow:"hidden"}}>
-        <Button color="quinary" sx={{position:"absolute", marginLeft:"1em;", float:"left"}} title="Load alternative image" className="hover-alternative-image" onClick={()=>fetch(`${window.location.toString().replace('/list', '/api/alternative')}/${id}`).then((response)=>response.text()).then(res => setUrl(getUrl(res)))}><Reload/></Button>
+        {isReadWriteUrl() && <Button color="quinary" sx={{position:"absolute", marginLeft:"1em;", float:"left"}} title="Load alternative image" className="hover-alternative-image" onClick={()=>fetch(getLoadAlternativeImageUrl(id)).then((response)=>response.text()).then(res => setUrl(getUrl(res)))}><Reload/></Button>}
         {url.length && (<div dangerouslySetInnerHTML={{ __html: url }}></div>)}
       </Box>
     </>
@@ -197,164 +73,16 @@ const Picture = ({ id, value, favicon }) => {
 const DeleteRow = ({row:{original}}) => {
   return (
     <>
-      <Box sx={{position:"relative", float:"right"}} >
-        <IconButton title="Delete" onClick={()=>fetch(`${window.location.toString().replace('/list', '/api/delete')}/${original.id}`).then(()=>window.location=window.location)}>
+      {isReadWriteUrl() && <Box sx={{position:"relative", float:"right"}} >
+        <IconButton title="Delete" onClick={()=>fetch(getDeleteItemUrl(original.id)).then(reloadPage)}>
           <Close />
         </IconButton>
-      </Box>
+      </Box>}
     </>
   );
 };
 
-// This is a custom filter UI that uses a
-// slider to set the filter value between a column's
-// min and max values
-function DoubleSliderColumnFilter({
-  column: { filterValue, setFilter, preFilteredRows, id },
-}) {
-  // Calculate the min and max
-  // using the preFilteredRows
 
-  const [min, max] = React.useMemo(() => {
-    let min = preFilteredRows.length ? preFilteredRows[0].values[id] : 0
-    let max = preFilteredRows.length ? preFilteredRows[0].values[id] : 100
-    preFilteredRows.forEach(row => {
-      min = Math.min(row.values[id], min)
-      max = Math.max(row.values[id], max)
-    })
-    return [min, max]
-  }, [id, preFilteredRows])
-
-
-  const handleChange = (event, newValue, activeThumb) => {
-    filterValue = {
-      min : newValue[0],
-      max : newValue[1]
-    }
-    setFilter(filterValue);
-  };
-
-  return (
-    <>
-      <Box sx={{ width: '30rem' }}>
-      <Slider
-        getAriaLabel={() => 'Price'}
-        value={[filterValue?.min||min, filterValue?.max||max]}
-        onChange={handleChange}
-        valueLabelDisplay="auto"
-        getAriaValueText={(v)=>v}
-        disableSwap
-        defaultValue={[min, max]}
-        step={10}
-        min={min-10}
-        max={max+10}
-      />
-    </Box>
-      <Button className="reset-button-left btn btn-secondary" onClick={() => setFilter(undefined)}>Reset</Button>
-    </>
-  )
-}
-
-
-// This is a custom UI for our 'between' or number range
-// filter. It uses two number boxes and filters rows to
-// ones that have values between the two
-function NumberRangeColumnFilter({
-  column: { filterValue = [], preFilteredRows, setFilter, id },
-}) {
-  const [min, max] = React.useMemo(() => {
-    let min = preFilteredRows.length ? preFilteredRows[0].values[id] : 0
-    let max = preFilteredRows.length ? preFilteredRows[0].values[id] : 0
-    preFilteredRows.forEach(row => {
-      min = Math.min(row.values[id], min)
-      max = Math.max(row.values[id], max)
-    })
-    return [min, max]
-  }, [id, preFilteredRows])
-
-  return (
-    <div
-      style={{
-        display: 'flex',
-      }}
-    >
-      <input
-        value={filterValue[0] || ''}
-        type="number"
-        onChange={e => {
-          const val = e.target.value
-          setFilter((old = []) => [val ? parseInt(val, 10) : undefined, old[1]])
-        }}
-        placeholder={`Min (${min})`}
-        style={{
-          width: '70px',
-          marginRight: '0.5rem',
-        }}
-      />
-      to
-      <input
-        value={filterValue[1] || ''}
-        type="number"
-        onChange={e => {
-          const val = e.target.value
-          setFilter((old = []) => [old[0], val ? parseInt(val, 10) : undefined])
-        }}
-        placeholder={`Max (${max})`}
-        style={{
-          width: '70px',
-          marginLeft: '0.5rem',
-        }}
-      />
-    </div>
-  )
-}
-
-const oldColumns = () => [
-    {
-      Header: 'Name',
-      columns: [
-        {
-          Header: 'First Name',
-          accessor: 'firstName',
-        },
-        {
-          Header: 'Last Name',
-          accessor: 'lastName',
-          // Use our custom `fuzzyText` filter on this column
-          filter: 'fuzzyText',
-        },
-      ],
-    },
-    {
-      Header: 'Info',
-      columns: [
-        {
-          Header: 'Age',
-          accessor: 'age',
-          Filter: SliderColumnFilter,
-          filter: 'equals',
-        },
-        {
-          Header: 'Visits',
-          accessor: 'visits',
-          Filter: NumberRangeColumnFilter,
-          filter: 'between',
-        },
-        {
-          Header: 'Status',
-          accessor: 'status',
-          Filter: SelectColumnFilter,
-          filter: 'includes',
-        },
-        {
-          Header: 'Profile Progress',
-          accessor: 'progress',
-          Filter: SliderColumnFilter,
-          filter: filterGreaterThan,
-        }
-      ],
-    },
-  ]
 
 
 export const Columns = () => [
@@ -369,7 +97,7 @@ export const Columns = () => [
       {
         Header: 'Picture',
         accessor: 'image',
-        Cell: ({ row:{original}, cell: { value } }) => <Picture id={original.id} favicon={original.logo} value={value.split(',')[0]} />,
+        Cell: Picture,
         Filter: FaviconColumnFilter,
         filter: filterDomain,
       },
@@ -384,6 +112,13 @@ export const Columns = () => [
         Header: 'Title',
         accessor: 'title',
         Cell: Title,
+      },
+      {
+        Header: 'Category',
+        accessor: 'category',
+        filter: filterCategory,
+        Cell: CategoryCell,
+        Filter: CategoryInput,
       }
     ],
   },

@@ -3,46 +3,12 @@ import { useTable, useFilters, useGlobalFilter, useAsyncDebounce } from 'react-t
 // A great library for fuzzy filtering/sorting items
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
 
 import { useRouter } from 'next/router'
-import { Columns } from './columns'
 import Row from './table/row'
-import filterGreaterThan from './filter/filterGreaterThan'
 import { Container } from '@mui/material';
+import Pager from './table/pager';
 
-// Define a default UI for filtering
-function GlobalFilter({
-  preGlobalFilteredRows,
-  globalFilter,
-  setGlobalFilter,
-}) {
-  const count = preGlobalFilteredRows.length
-  const [value, setValue] = React.useState(globalFilter)
-  const onChange = useAsyncDebounce(value => {
-    setGlobalFilter(value || undefined)
-  }, 200)
-
-  return (
-    <span>
-      Search:{' '}
-      <input
-        value={value || ""}
-        onChange={e => {
-          setValue(e.target.value);
-          onChange(e.target.value);
-        }}
-        placeholder={`${count} records...`}
-        style={{
-          fontSize: '1.1rem',
-          border: '0',
-        }}
-      />
-    </span>
-  )
-}
 
 // Define a default UI for filtering
 function DefaultColumnFilter({
@@ -130,7 +96,7 @@ export default function Table({ columns, data }) {
   const router = useRouter();
 
   React.useEffect(() => {
-    setPage(1)
+    setPage(1);
   }, [router]);
 
   // We don't want to render all of the rows for this example, so cap
@@ -151,6 +117,7 @@ export default function Table({ columns, data }) {
               ))}
             </Container>
           ))}
+        <Pager page={page} setPage={setPage} rows={rows} productPerPage={productPerPage} />
           <Box sx={{clear:'both'}}/>
         <Container {...getTableBodyProps()} sx={{ padding:"0!important"}}>
           {firstPageRows.map((row, i) => {
@@ -160,12 +127,7 @@ export default function Table({ columns, data }) {
         </Container>
       </Container>
       <Box sx={{clear:'both'}}/>
-      <Box sx={{margin:'2em'}}>
-        <Button disabled={page == 1} onClick={()=>{setPage(1); window.scrollTo(0, 0);}}>First</Button>
-        <Button disabled={page-1==0} onClick={()=>{setPage(page-1); window.scrollTo(0, 0);}}>Previous</Button>
-        Page {page} / {Math.round(rows.length/productPerPage) +1}
-        <Button disabled={page*productPerPage>=rows.length} onClick={()=>{setPage(page+1); window.scrollTo(0, 0);}}>Next</Button>
-      </Box>
+      <Pager page={page} setPage={setPage} rows={rows} productPerPage={productPerPage} />
     </>
   )
 }

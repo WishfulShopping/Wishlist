@@ -10,22 +10,33 @@ import EvenIcon from '@mui/icons-material/NewspaperOutlined';
 import OddIcon from '@mui/icons-material/NewspaperSharp';
 import PlusOne from '@mui/icons-material/Add';
 import theme from '../../src/theme';
+import { useRouter } from 'next/router'
+import { Typography } from '@mui/material';
+import { isWishlistSelected } from '../../lib/url';
 
-export default function Item({url, item, index}) {
+export default function Item({url, item, type}) {
     
   const [{ isOver }, drop] = useDrop(
     () => ({
       accept: 'row',
-      drop: ([id, baseUrl]) => fetch(`${baseUrl.replace('/list', '/api/copy')}/${id}?to=${url.replace('/list/', '')}`).then(()=>window.location=url),
+      drop: ([id, baseUrl, setCompleted]) => {
+        fetch(`${baseUrl.replace('/list', '/api/copy').split('?')[0]}/${id}?to=${url.replace('/list/', '').replace('?category', '&change[category]').replaceAll('?', '&')}`)
+        setCompleted(true);
+      },
       collect: (monitor) => ({
         isOver: !!monitor.isOver()
       })
     }),
     [url]
-  )
+  );
+  const router = useRouter();
+  const [selected, select] = React.useState(true);
+  React.useEffect(()=>{
+    select(isWishlistSelected(url));
+  }, [router, url]);
 
     return (
-      <ListItem key={index} ref={drop} disablePadding sx={{ display: 'block' }}>
+      <ListItem ref={drop} disablePadding sx={{ display: 'block' }}>
         <ListItemButton
           sx={{
             minHeight: 48,
@@ -42,9 +53,9 @@ export default function Item({url, item, index}) {
               justifyContent: 'center',
             }}
           >
-            {isOver ? <PlusOne/> : index % 2 === 0 ? <EvenIcon /> : <OddIcon />}
+            {isOver ? <PlusOne/> : type}
           </ListItemIcon>
-          <ListItemText primary={item || url.replace('/list/', '')} sx={{ opacity: open ? 1 : 0 }} />
+          <ListItemText disableTypography primary={<Typography style={{ fontWeight: selected ? 800:'normal' }}>{item || url.replace('/list/', '')}</Typography>} sx={{ opacity: open ? 1 : 0 }} />
         </ListItemButton>
         {isOver && (
         <div
