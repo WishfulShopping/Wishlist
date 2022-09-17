@@ -11,6 +11,7 @@ import Box from '@mui/material/Box';
 import { Link, Typography } from '@mui/material';
 import theme from '../src/theme';
 import { getDeleteItemUrl, getLoadAlternativeImageUrl, isReadWriteUrl, reloadPage } from '../lib/url';
+import { filterShopping, ShoppingCell, ShoppingInput } from './filter/filterShopping';
 
 
 
@@ -62,8 +63,8 @@ const Picture = ({ row:{original}, cell: { value } }) => {
 
   return (
     <>
+    {isReadWriteUrl() && <Button color="quinary" sx={{position:"absolute", marginLeft:"1em;", float:"left", marginTop:"-1em"}} title="Load alternative image" className="hover-alternative-image" onClick={()=>fetch(getLoadAlternativeImageUrl(id)).then((response)=>response.text()).then(res => setUrl(getUrl(res)))}><Reload/></Button>}
       <Box sx={{height:"15rem", overflow:"hidden"}}>
-        {isReadWriteUrl() && <Button color="quinary" sx={{position:"absolute", marginLeft:"1em;", float:"left"}} title="Load alternative image" className="hover-alternative-image" onClick={()=>fetch(getLoadAlternativeImageUrl(id)).then((response)=>response.text()).then(res => setUrl(getUrl(res)))}><Reload/></Button>}
         {url.length && (<div dangerouslySetInnerHTML={{ __html: url }}></div>)}
       </Box>
     </>
@@ -73,7 +74,7 @@ const Picture = ({ row:{original}, cell: { value } }) => {
 const DeleteRow = ({row:{original}}) => {
   return (
     <>
-      {isReadWriteUrl() && <Box sx={{position:"relative", float:"right"}} >
+      {isReadWriteUrl() && <Box sx={{position:"relative", float:"right", marginTop:"-1em"}} >
         <IconButton title="Delete" onClick={()=>fetch(getDeleteItemUrl(original.id)).then(reloadPage)}>
           <Close />
         </IconButton>
@@ -85,10 +86,17 @@ const DeleteRow = ({row:{original}}) => {
 
 
 
-export const Columns = () => [
+export const Columns = (shoppingCart, setShoppingCart) => () => [
   {
     Header: 'Favorites',
     columns: [
+      {
+        Header: 'Shopping',
+        accessor: 'shopping',
+        filter: filterShopping,
+        Cell: (props) => <ShoppingCell shoppingCart={shoppingCart} setShoppingCart={setShoppingCart} {...props} /> ,
+        Filter: (props) => <ShoppingInput shoppingCart={shoppingCart} setShoppingCart={setShoppingCart} {...props} /> ,
+      },
       {
         Header: 'Delete',
         Cell: DeleteRow,

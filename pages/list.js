@@ -11,17 +11,16 @@ import { getWishlistDataUrl } from '../lib/url';
 
 export default function List() {
   const [data, setData] = React.useState([]);
-  const [column] = React.useState(Columns);
+  const [shoppingCart, setShoppingCart] =  React.useState(new Set());
+  const [column] = React.useState(Columns(shoppingCart, setShoppingCart));
   const router = useRouter();
   React.useEffect(() => {
     /* get wishlist data*/
     fetch(getWishlistDataUrl()).then(response => response.json()).then(setData);
-
   }, [router]);
   
   return (
-    <>     
-      
+    <>
       {data.length>0 && (<Container sx={{ padding:"0!important" }}>
           <div className="ReactTable">
             <Table columns={column} data={data} />
