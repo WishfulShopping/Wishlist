@@ -42,6 +42,10 @@ module.exports = {
         {
           source: `/api/copy/:id`,
           destination: `/api/copy?id=:id`
+        },
+        {
+          source: `/greasemonkey.user.js`,
+          destination: `/api/greasemonkey`
         }
       ];
     },
