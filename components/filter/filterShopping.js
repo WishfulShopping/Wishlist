@@ -37,8 +37,14 @@ export function ShoppingInput({shoppingCart, setShoppingCart,
   {cart>0 && <Box sx={ {
           margin: 0,
           top: 'auto',
-          right: 20,
-          bottom: 20,
+          right: {
+            xs:'10%',
+            sm:'5%'
+          },
+          bottom: {
+            xs:'25%',
+            sm:'5%'
+          },
           left: 'auto',
           position: 'fixed',
       }}>

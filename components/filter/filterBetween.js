@@ -51,7 +51,7 @@ export function DoubleSliderColumnFilter({
 
   return (
     <>
-      <Box sx={{ width: '30rem' }}>
+      <Box sx={{ width: {md:'30rem', sm:'20rem' }}}>
       <Slider
         getAriaLabel={() => 'Price'}
         value={[filterValue?.min||min, filterValue?.max||max]}
