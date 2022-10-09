@@ -23,7 +23,6 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Add from '@mui/icons-material/AddCircle';
-import { uid } from 'uid/secure';
 import Title  from '../components/title';
 import { useRouter } from 'next/router'
 import { useHistory } from '../lib/history';
@@ -127,9 +126,7 @@ export default function Layout({children}) {
     setOpen(false);
   };
 
-  const [id, setId] = React.useState("");
   React.useEffect(() => {
-    setId(uid(32));
     window['metascraperDisable'] = true;
   }, [router]);
   return (
@@ -177,7 +174,7 @@ export default function Layout({children}) {
                   px: 2.5,
                 }}
                 component={Link} 
-                to={`list/${id}`}
+                to={`api/create`}
               >
                 <ListItemIcon
                   sx={{
