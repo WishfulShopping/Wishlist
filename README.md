@@ -17,3 +17,10 @@ Install it and run:
 npm install
 npm run dev
 ```
+
+## Proxy https
+
+```
+npm install -g local-ssl-proxy
+local-ssl-proxy --source 9001 --target 4576
+```
