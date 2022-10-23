@@ -1,9 +1,11 @@
 
 
 import { useRouter } from 'next/router'
+import { useState } from 'react'
 import React from 'react'
 import {  useAsyncDebounce } from 'react-table'
 import { getUrlParam } from '../../lib/url';
+import Chip from '@mui/material/Chip';
 // Define a custom filter filter function!
 export function filterCategory(rows, id, filterValue) {
 
@@ -46,6 +48,14 @@ export function CategoryInput({
 
 // Custom component to render Title 
 export function CategoryCell({row:{original}}) {
-  return (<></>
-  )
+  const router = useRouter();
+  const [show, setShow] = useState(false);
+  React.useEffect(() => {
+    const params = getUrlParam();
+    setShow(params?.category ? false : true);
+  }, [router]);
+  if (show && original.category) {
+    return (<Chip title={original.category} label={original.category.substring(0,1)} size="small" color="success" style={{float:"right", margin:1}}/>);
+  }
+  return (<></>);
 };
