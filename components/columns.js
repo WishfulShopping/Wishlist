@@ -59,7 +59,16 @@ const Picture = ({ row:{original}, cell: { value } }) => {
     return `<img src="${value}" width="${width}px" />`;
   }
   const [url, setUrl] = React.useState("");
-  React.useEffect(()=>setUrl(getUrl(value.split(',')[0])), [value]);
+  React.useEffect(
+    ()=> {
+      if (value) {
+        setUrl(getUrl(value.split(',')[0]));
+      }
+    },
+    [
+      value
+    ]
+  );
 
   return (
     <>
