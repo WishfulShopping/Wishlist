@@ -48,7 +48,7 @@ export default async (req, res) => {
   if (req.method !== 'POST') {
     return res.redirect(302, req.url.replace('api/url/add','list')).end()
   }
-  const form = new multiparty.Form();
+  const form = new multiparty.Form({maxFieldsSize:'20MB'});
   const {fields, files} = await new Promise((resolve, reject) => {
     form.parse(req, function (err, fields, files) {
       if (err) reject({ err });
@@ -57,8 +57,7 @@ export default async (req, res) => {
   });
   const handler =  new Page(fields.url[0]);
   handler.images = fields.images;
-  handler.scrape(fields.html[0]).then(()=>{
-    res.status(200).json(handler);
-    handler.save(req.query.id)
-  });//.catch(()=>res.status(500).json({ error: true }));
+  await handler.scrape(fields.html[0]);
+  res.status(200).json(handler);
+  handler.save(req.query.id);
 }
